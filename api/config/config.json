@@ -1,0 +1,5 @@
+{
+    "jwtSecret": "uA7jKp9XrV6E3MqDcG5LhF2fBvTnZtW",
+    "mongoURI": "http://localhost:3000"
+  }
+  
