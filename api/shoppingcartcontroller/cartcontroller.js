@@ -80,7 +80,40 @@ getallItems= async(req,res)=>{
 
 };
 
+cancelCartItems = async (req,res)=>{
+  const { itemIds } = req.body;
+  let Items =[];
+  Items = Items.concat(itemIds);
+  if(Items.length === 1){
+    CartItem.cartitem.updateOne({ _id:Items[0] }, { isCancelled: true })
+    .then(result => {
+      if (result.nModified === 0) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+      res.status(200).json({ message: 'Item updated successfully' });
+    })
+    .catch(error => {
+      res.status(500).json({ error: 'Error updating item' });
+    });
+
+  } else if(Items.length){
+    CartItem.cartitem.updateMany({ _id: { $in: itemIds } }, { isCancelled: true })
+    .then(result => {
+      if (result.nModified === 0) {
+        return res.status(404).json({ error: 'Items not found' });
+      }
+      res.status(200).json({ message: 'Items updated successfully' });
+    })
+    .catch(error => {
+      res.status(500).json({ error: 'Error updating items' });
+    });
+
+  }
+
+}
+
 module.exports = {
   addItemToCart,
-  getallItems
+  getallItems,
+  cancelCartItems
 };

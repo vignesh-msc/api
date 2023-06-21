@@ -12,6 +12,10 @@ const cartItemSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     required: true
+  },
+  isCancelled: {
+    type: Boolean,
+    default: false
   }
 });
 

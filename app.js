@@ -59,6 +59,7 @@ const url = 'mongodb+srv://nagarajanvignesh1:motivity123@cluster1.kkcftel.mongod
   //getEmployeeprofile
   app.post('/createmployee',employee_controller.createEmployee);
   app.post('/createcart',cart_controller.addItemToCart);
+  app.put('/cart/items', cart_controller.cancelCartItems);
   app.get('/getcartdetails/:UserID',cart_controller.getallItems);
   app.get('/getemployeeprofile/:UserID',employee_controller.getEmployeeprofile);
 app.get('/employees', async function (req, res) {
