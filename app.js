@@ -13,7 +13,8 @@ const documents = require('./api/models/document');
 const empdetails=require('./api/models/employeeregistration');
 const multer = require('multer');
 const employee_controller = require('./api/employeecontroller/empcontroller');
-const cart_controller = require('./api/shoppingcartcontroller/cartcontroller')
+const cart_controller = require('./api/shoppingcartcontroller/cartcontroller');
+const stockitem =require('./api/models/stockitem');
 const employee_profile = require('./api/models/employeeentity');
 const officialDetails = require('./api/models/officialdetails');
 app.listen(3000, () => {
@@ -61,6 +62,7 @@ const url = 'mongodb+srv://nagarajanvignesh1:motivity123@cluster1.kkcftel.mongod
   app.post('/createcart',cart_controller.addItemToCart);
   app.put('/cart/items', cart_controller.cancelCartItems);
   app.get('/getcartdetails/:UserID',cart_controller.getallItems);
+  app.get('/getmasterstockitems', cart_controller.getMasterStockItems);
   app.get('/getemployeeprofile/:UserID',employee_controller.getEmployeeprofile);
 app.get('/employees', async function (req, res) {
   try {
@@ -193,6 +195,27 @@ app.get('/getprofiledetails',async (req, res) => {
     res.status(500).send('An error occurred');
   }
 });
+const seedData = async () => {
+  try {
+    const stockItems = [
+      { name: 'Lenova laptop', quantity: 10,price:10000 },
+      { name: 'Nikon Camera', quantity: 5 ,price:13000},
+      { name: 'Samsung lcd', quantity: 8 ,price:40000}
+      // Add more items as needed
+    ];
+    // Clear existing stock items
+    await stockitem.deleteMany();
 
+    // Insert the seed data
+    await stockitem.insertMany(stockItems);
+
+    console.log('Seed data inserted successfully');
+    process.exit(0); // Exit the script
+  } catch (error) {
+    console.error('Error seeding data:', error);
+    process.exit(1); // Exit the script with an error
+  }
+};
+//seedData();
 
 

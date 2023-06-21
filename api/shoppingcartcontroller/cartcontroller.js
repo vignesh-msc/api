@@ -1,6 +1,7 @@
 
 const Cart = require('../models/cart');
 const CartItem = require('../models/cartitem');
+const StockItem = require('../models/stockitem');
 
 // Add item to cart
 addItemToCart = (req, res) => {
@@ -16,7 +17,8 @@ addItemToCart = (req, res) => {
       name: item.name,
       price: item.price,
       quantity: item.quantity,
-      user:userId
+      user:userId,
+      stockitem:item.stockitemId
     });
     cartItems.push(cartItem);
   }
@@ -120,8 +122,29 @@ cancelCartItems = async (req,res)=>{
 
 }
 
+getMasterStockItems = async (req,res)=>{
+  try {
+    const stockItems = await StockItem.find();
+    const transformedStockItems = stockItems.map(item => {
+  return {
+    id: item._id.toString(), // Convert ObjectId to string
+    // Map other fields as needed
+    name: item.name,
+    price: item.price,
+    quantity:item.quantity
+  };
+});
+    res.status(200).json(transformedStockItems);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve stock items' });
+  }
+ 
+
+}
+
 module.exports = {
   addItemToCart,
   getallItems,
-  cancelCartItems
+  cancelCartItems,
+  getMasterStockItems
 };

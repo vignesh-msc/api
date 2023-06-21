@@ -22,6 +22,11 @@ const cartItemSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  stockitem: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'stockitem',
+    required: true
+  }
 });
 
 const cartitem = mongoose.model('cartitem', cartItemSchema, 'cartitem');
