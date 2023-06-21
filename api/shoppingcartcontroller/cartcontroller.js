@@ -15,11 +15,13 @@ addItemToCart = (req, res) => {
     const cartItem = new CartItem.cartitem({
       name: item.name,
       price: item.price,
-      quantity: item.quantity
+      quantity: item.quantity,
+      user:userId
     });
     cartItems.push(cartItem);
   }
-
+  console.log('items',items);
+console.log('cartItems',cartItems);
   // Save the cart items to the database
   CartItem.cartitem.insertMany(cartItems, { ordered: false })
     .then(savedItems => {
@@ -65,12 +67,18 @@ addItemToCart = (req, res) => {
 getallItems= async(req,res)=>{
   const userId = req.params.UserID;
   try{
-    const carts = await Cart.cart.findOne({user:userId}).populate('items');
-    res.status(200).json({
-      message: 'Retrieved items',
-      cart: carts.items
-    });
-
+    const carts = await Cart.cart.findOne({ user: userId })
+    .populate({
+      path: 'items',
+      match: { isCancelled: false }
+    })
+    .exec();
+    if (!carts) {
+      // Cart not found
+      return res.status(404).json({ error: 'Cart not found' });
+    }
+    const items = carts.items;
+    res.status(200).json({ message: 'Retrieved items', cart: carts.items });
 
   } catch(error){
     res.status(500).json({ message: 'Error retrieving cart details', error: error.message });
@@ -81,11 +89,11 @@ getallItems= async(req,res)=>{
 };
 
 cancelCartItems = async (req,res)=>{
-  const { itemIds } = req.body;
+  const { itemIds,userId } = req.body;
   let Items =[];
   Items = Items.concat(itemIds);
   if(Items.length === 1){
-    CartItem.cartitem.updateOne({ _id:Items[0] }, { isCancelled: true })
+    CartItem.cartitem.updateOne({ _id:Items[0],user: userId }, { isCancelled: true })
     .then(result => {
       if (result.nModified === 0) {
         return res.status(404).json({ error: 'Item not found' });
@@ -97,7 +105,7 @@ cancelCartItems = async (req,res)=>{
     });
 
   } else if(Items.length){
-    CartItem.cartitem.updateMany({ _id: { $in: itemIds } }, { isCancelled: true })
+    CartItem.cartitem.updateMany({ _id: { $in: itemIds },user: userId }, { isCancelled: true })
     .then(result => {
       if (result.nModified === 0) {
         return res.status(404).json({ error: 'Items not found' });

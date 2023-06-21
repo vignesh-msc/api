@@ -16,7 +16,12 @@ const cartItemSchema = new mongoose.Schema({
   isCancelled: {
     type: Boolean,
     default: false
-  }
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
 });
 
 const cartitem = mongoose.model('cartitem', cartItemSchema, 'cartitem');
